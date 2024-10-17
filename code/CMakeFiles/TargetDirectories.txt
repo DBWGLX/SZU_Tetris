@@ -1,0 +1,3 @@
+F:/2024/my_homework/txx/midterm/code/CMakeFiles/main.dir
+F:/2024/my_homework/txx/midterm/code/CMakeFiles/ALL_BUILD.dir
+F:/2024/my_homework/txx/midterm/code/CMakeFiles/ZERO_CHECK.dir

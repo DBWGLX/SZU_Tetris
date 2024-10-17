@@ -1,0 +1,15 @@
+﻿  main.cpp
+F:\2024\my_homework\txx\midterm\code\include\Angel.h(71,47): warning C4305: “初始化”: 从“double”到“GLfloat”截断
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: “APIENTRY”: 宏重定义
+F:\2024\my_homework\txx\vcpkg\vcpkg\installed\x64-windows\include\glad/glad.h(32): message : 参见“APIENTRY”的前一个定义
+F:\2024\my_homework\txx\midterm\code\main.cpp(474,9): warning C4244: “初始化”: 从“T”转换到“int”，可能丢失数据
+          with
+          [
+              T=float
+          ]
+F:\2024\my_homework\txx\midterm\code\main.cpp(475,9): warning C4244: “初始化”: 从“T”转换到“int”，可能丢失数据
+          with
+          [
+              T=float
+          ]
+  main.vcxproj -> F:\2024\my_homework\txx\midterm\code\Debug\main.exe

@@ -1,0 +1,10 @@
+^F:\2024\MY_HOMEWORK\TXX\MIDTERM\CODE\CMAKELISTS.TXT
+setlocal
+F:\2024\my_homework\txx\cmake\bin\cmake.exe -SF:/2024/my_homework/txx/midterm/code -BF:/2024/my_homework/txx/midterm/code --check-stamp-file F:/2024/my_homework/txx/midterm/code/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
