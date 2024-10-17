@@ -16,7 +16,7 @@
  * - 3) 方块的自动向下移动					: void allFallsDown()
  * - 4) 方块之间、方块与边界之间的碰撞检测	: checkvalid()函数已实现对当前四个方块移动后的边界检测，我们只需要加上检查移动后位置的board[x][y]是否合法即可。
  * - 5) 棋盘格中每一行填充满之后自动消除	: void checkfull() 从上往下检查，如果一行满了，其上面所有行都往下坠
- * - 6) 按下空格键使方块快速下落			: key_callback() 中 case GLFW_KEY_SPACE: 循环下移直到冲突。然后newtile再次开始即可。 
+ * - 6) 按下空格键使方块快速下落			: key_callback() 中 case GLFW_KEY_SPACE: 循环下移直到冲突。然后newtile再次开始即可。
  *
  * ※ 额外实现的功能如下：
  * - 1) 实现了空格键直接下落
@@ -25,7 +25,7 @@
  * - 4) 完善了restart()，只需把方块清空即可。
  */
 
-//#pragma execution_character_set("utf-8")//窗口中文乱码
+ //#pragma execution_character_set("utf-8")//窗口中文乱码
 
 #include "Angel.h"
 
@@ -72,63 +72,63 @@ const int points_num = board_height * board_width * 6;
 // 包含横线 board_height+1 条
 // 一条线2个顶点坐标
 // 网格线的数量
-const int board_line_num =  (board_width + 1) + (board_height + 1);
+const int board_line_num = (board_width + 1) + (board_height + 1);
 
 
 // 一个二维数组表示所有可能出现的方块和方向。
 glm::vec2 allRotationsCurshape[4][4] =
-							  {{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
-							   {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},  
-							   {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},  
-								{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)}};
+{ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+  {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)} };
 
 glm::vec2 allRotationsOshape[4][4] =
-							  {{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
-							   {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},  
-							   {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},  
-								{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)}};
+{ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+  {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(-1,-1)} };
 
 glm::vec2 allRotationsIshape[4][4] =
-							  {{glm::vec2(-2,0), glm::vec2(-1,0), glm::vec2(0, 0), glm::vec2(1,0)},
-							   {glm::vec2(0,-2), glm::vec2(0,-1), glm::vec2(0, 0), glm::vec2(0,1)},
-							   {glm::vec2(-2,0), glm::vec2(-1,0), glm::vec2(0, 0), glm::vec2(1,0)},
-							   {glm::vec2(0,-2), glm::vec2(0,-1), glm::vec2(0, 0), glm::vec2(0,1)} };
+{ {glm::vec2(-2,0), glm::vec2(-1,0), glm::vec2(0, 0), glm::vec2(1,0)},
+ {glm::vec2(0,-2), glm::vec2(0,-1), glm::vec2(0, 0), glm::vec2(0,1)},
+ {glm::vec2(-2,0), glm::vec2(-1,0), glm::vec2(0, 0), glm::vec2(1,0)},
+ {glm::vec2(0,-2), glm::vec2(0,-1), glm::vec2(0, 0), glm::vec2(0,1)} };
 
 glm::vec2 allRotationsSshape[4][4] =
-							  {{glm::vec2(0, 0), glm::vec2(1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
-							   {glm::vec2(1, 0), glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(1, -1)},   
-							   {glm::vec2(0, 0), glm::vec2(1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
-							   {glm::vec2(1, 0), glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(1, -1)}};
+{ {glm::vec2(0, 0), glm::vec2(1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+ {glm::vec2(1, 0), glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(1, -1)},
+ {glm::vec2(0, 0), glm::vec2(1,0), glm::vec2(0, -1), glm::vec2(-1,-1)},
+ {glm::vec2(1, 0), glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(1, -1)} };
 
 glm::vec2 allRotationsZshape[4][4] =
-							  {{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(1,-1)},
-							   {glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1,1), glm::vec2(0, -1)},   
-							   {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(1,-1)},   
-							   {glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1,1), glm::vec2(0, -1)}};
+{ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(1,-1)},
+ {glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1,1), glm::vec2(0, -1)},
+ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(0, -1), glm::vec2(1,-1)},
+ {glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1,1), glm::vec2(0, -1)} };
 
 glm::vec2 allRotationsLshape[4][4] =
-							  {{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(-1, -1), glm::vec2(1,0)},	//   "L"
-							   {glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(1, -1)},   //
-							   {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(1,  1)},   //
-							   {glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(-1, 1), glm::vec2(0, -1)}};
+{ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(-1, -1), glm::vec2(1,0)},	//   "L"
+ {glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(1, -1)},   //
+ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(1,  1)},   //
+ {glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(-1, 1), glm::vec2(0, -1)} };
 
 glm::vec2 allRotationsJshape[4][4] =
-								{{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(1,-1)},
-								{glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0, -1), glm::vec2(1, 1)},
-								{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1,  0), glm::vec2(-1, 1)},
-								{glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(-1, -1)}
-							   };
+{ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(1,-1)},
+{glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0, -1), glm::vec2(1, 1)},
+{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1,  0), glm::vec2(-1, 1)},
+{glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(-1, -1)}
+};
 
 glm::vec2 allRotationsTshape[4][4] =
-							  {{glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(0,-1)},
-							   {glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(1, 0)},   
-							   {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(0, 1)},   
-							   {glm::vec2(-1,0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(0, 0)}};
+{ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(0,-1)},
+ {glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(1, 0)},
+ {glm::vec2(0, 0), glm::vec2(-1,0), glm::vec2(1, 0), glm::vec2(0, 1)},
+ {glm::vec2(-1,0), glm::vec2(0, 1), glm::vec2(0,-1), glm::vec2(0, 0)} };
 
 // 绘制窗口的颜色变量
-glm::vec4 white  = glm::vec4(1.0, 1.0, 1.0, 1.0);
-glm::vec4 gray   = glm::vec4(0.8, 0.8, 0.8, 1.0);
-glm::vec4 black  = glm::vec4(0.0, 0.0, 0.0, 1.0);
+glm::vec4 white = glm::vec4(1.0, 1.0, 1.0, 1.0);
+glm::vec4 gray = glm::vec4(0.8, 0.8, 0.8, 1.0);
+glm::vec4 black = glm::vec4(0.0, 0.0, 0.0, 1.0);
 
 glm::vec4 red = glm::vec4(1.0, 0.0, 0.0, 1.0); // 赤色
 glm::vec4 orange = glm::vec4(1.0, 0.5, 0.0, 1.0); // 橙色
@@ -159,7 +159,7 @@ GLuint vbo[6];
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, width, height);
+	glViewport(0, 0, width, height);
 }
 
 // 修改棋盘格在pos位置的颜色为colour，并且更新对应的VBO
@@ -167,14 +167,14 @@ void changecellcolour(glm::vec2 pos, glm::vec4 colour)
 {
 	// 每个格子是个正方形，包含两个三角形，总共6个定点，并在特定的位置赋上适当的颜色
 	for (int i = 0; i < 6; i++)
-    	board_colours[(int)( 6 * ( board_width * pos.y + pos.x) + i)] = colour; //【一列width个;每个方块有6个点】
+		board_colours[(int)(6 * (board_width * pos.y + pos.x) + i)] = colour; //【一列width个;每个方块有6个点】
 
-	glm::vec4 newcolours[6] = {colour, colour, colour, colour, colour, colour};
+	glm::vec4 newcolours[6] = { colour, colour, colour, colour, colour, colour };
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
 
 	// 计算偏移量，在适当的位置赋上颜色
-	int offset = 6 * sizeof(glm::vec4) * (int)( board_width * pos.y + pos.x);
+	int offset = 6 * sizeof(glm::vec4) * (int)(board_width * pos.y + pos.x);
 	glBufferSubData(GL_ARRAY_BUFFER, offset, sizeof(newcolours), newcolours);  // 上色
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -192,20 +192,20 @@ void updatetile()
 		GLfloat y = tilepos.y + tile[i].y;
 
 		glm::vec4 p1 = glm::vec4(tile_width + (x * tile_width), tile_width + (y * tile_width), .4, 1);
-		glm::vec4 p2 = glm::vec4(tile_width + (x * tile_width), tile_width*2 + (y * tile_width), .4, 1);
-		glm::vec4 p3 = glm::vec4(tile_width*2 + (x * tile_width), tile_width + (y * tile_width), .4, 1);
-		glm::vec4 p4 = glm::vec4(tile_width*2 + (x * tile_width), tile_width*2 + (y * tile_width), .4, 1);
+		glm::vec4 p2 = glm::vec4(tile_width + (x * tile_width), tile_width * 2 + (y * tile_width), .4, 1);
+		glm::vec4 p3 = glm::vec4(tile_width * 2 + (x * tile_width), tile_width + (y * tile_width), .4, 1);
+		glm::vec4 p4 = glm::vec4(tile_width * 2 + (x * tile_width), tile_width * 2 + (y * tile_width), .4, 1);
 		//【】 (1,1) (1,2) (2,1) (2,2) ———— 这个方块的四个顶点坐标
 
 		// 每个格子包含两个三角形，所以有6个顶点坐标
-		glm::vec4 newpoints[6] = {p1, p2, p3, p2, p3, p4};
-		glBufferSubData(GL_ARRAY_BUFFER, i*6*sizeof(glm::vec4), 6*sizeof(glm::vec4), newpoints); //【放回缓冲区】
+		glm::vec4 newpoints[6] = { p1, p2, p3, p2, p3, p4 };
+		glBufferSubData(GL_ARRAY_BUFFER, i * 6 * sizeof(glm::vec4), 6 * sizeof(glm::vec4), newpoints); //【放回缓冲区】
 	}
-	#ifdef __APPLE__
-		glBindVertexArrayAPPLE(0);
-	#else
-		glBindVertexArray(0);
-	#endif
+#ifdef __APPLE__
+	glBindVertexArrayAPPLE(0);
+#else
+	glBindVertexArray(0);
+#endif
 }
 
 // 设置当前方块为下一个即将出现的方块。在游戏开始的时候调用来创建一个初始的方块，
@@ -213,13 +213,13 @@ void updatetile()
 void newtile()
 {
 	// 将新方块放于棋盘格的最上行中间位置并设置默认的旋转方向 
-	tilepos = glm::vec2(5 , 19);
+	tilepos = glm::vec2(5, 19);
 	rotation = 0;
 
-	curShape = dis(gen)%7;
-	for(int i=0;i<4;i++){
-		for(int j=0;j<4;j++){
-			switch(curShape){
+	curShape = dis(gen) % 7;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			switch (curShape) {
 			case 0:
 				allRotationsCurshape[i][j] = allRotationsOshape[i][j]; break;
 			case 1:
@@ -238,14 +238,14 @@ void newtile()
 		}
 	}
 
-	for (int i = 0; i < 4; i++){
+	for (int i = 0; i < 4; i++) {
 		tile[i] = allRotationsCurshape[0][i];
 	}
 
 	updatetile();
 
 	// 给新方块赋上颜色
-	curColor = dis(gen)%7;
+	curColor = dis(gen) % 7;
 	glm::vec4 newcolours[24]; // 【4 * （2*3）】
 	for (int i = 0; i < 24; i++)
 		newcolours[i] = colors[curColor];
@@ -264,23 +264,23 @@ void init()
 	// 包含竖线 board_width+1 条
 	// 包含横线 board_height+1 条
 	// 一条线2个顶点坐标，并且每个顶点一个颜色值
-	
+
 	glm::vec4 gridpoints[board_line_num * 2];
 	glm::vec4 gridcolours[board_line_num * 2];
 
 	// 绘制网格线 【列出所有点的位置】
 	// 纵向线
-	for (int i = 0; i < (board_width+1); i++)
+	for (int i = 0; i < (board_width + 1); i++)
 	{
-		gridpoints[2*i] = glm::vec4((tile_width + (tile_width * i)), tile_width, 0, 1);
-		gridpoints[2*i + 1] = glm::vec4((tile_width + (tile_width * i)), (board_height+1) * tile_width, 0, 1);
+		gridpoints[2 * i] = glm::vec4((tile_width + (tile_width * i)), tile_width, 0, 1);
+		gridpoints[2 * i + 1] = glm::vec4((tile_width + (tile_width * i)), (board_height + 1) * tile_width, 0, 1);
 	}
 
 	// 水平线
-	for (int i = 0; i < (board_height+1); i++)
+	for (int i = 0; i < (board_height + 1); i++)
 	{
-		gridpoints[ 2*(board_width+1) + 2*i ] = glm::vec4(tile_width, (tile_width + (tile_width * i)), 0, 1);
-		gridpoints[ 2*(board_width+1) + 2*i + 1 ] = glm::vec4((board_width+1) * tile_width, (tile_width + (tile_width * i)), 0, 1);
+		gridpoints[2 * (board_width + 1) + 2 * i] = glm::vec4(tile_width, (tile_width + (tile_width * i)), 0, 1);
+		gridpoints[2 * (board_width + 1) + 2 * i + 1] = glm::vec4((board_width + 1) * tile_width, (tile_width + (tile_width * i)), 0, 1);
 	}
 
 	// 将所有线赋成白色 【灰】
@@ -297,15 +297,15 @@ void init()
 		for (int j = 0; j < board_width; j++)
 		{
 			glm::vec4 p1 = glm::vec4(tile_width + (j * tile_width), tile_width + (i * tile_width), .5, 1);
-			glm::vec4 p2 = glm::vec4(tile_width + (j * tile_width), tile_width*2 + (i * tile_width), .5, 1);
-			glm::vec4 p3 = glm::vec4(tile_width*2 + (j * tile_width), tile_width + (i * tile_width), .5, 1);
-			glm::vec4 p4 = glm::vec4(tile_width*2 + (j * tile_width), tile_width*2 + (i * tile_width), .5, 1);
-			boardpoints[ 6 * ( board_width * i + j ) + 0 ] = p1;
-			boardpoints[ 6 * ( board_width * i + j ) + 1 ] = p2;
-			boardpoints[ 6 * ( board_width * i + j ) + 2 ] = p3;
-			boardpoints[ 6 * ( board_width * i + j ) + 3 ] = p2;
-			boardpoints[ 6 * ( board_width * i + j ) + 4 ] = p3;
-			boardpoints[ 6 * ( board_width * i + j ) + 5 ] = p4;
+			glm::vec4 p2 = glm::vec4(tile_width + (j * tile_width), tile_width * 2 + (i * tile_width), .5, 1);
+			glm::vec4 p3 = glm::vec4(tile_width * 2 + (j * tile_width), tile_width + (i * tile_width), .5, 1);
+			glm::vec4 p4 = glm::vec4(tile_width * 2 + (j * tile_width), tile_width * 2 + (i * tile_width), .5, 1);
+			boardpoints[6 * (board_width * i + j) + 0] = p1;
+			boardpoints[6 * (board_width * i + j) + 1] = p2;
+			boardpoints[6 * (board_width * i + j) + 2] = p3;
+			boardpoints[6 * (board_width * i + j) + 3] = p2;
+			boardpoints[6 * (board_width * i + j) + 4] = p3;
+			boardpoints[6 * (board_width * i + j) + 5] = p4;
 		}
 
 	// 将棋盘格所有位置的填充与否都设置为false（没有被填充）
@@ -326,12 +326,12 @@ void init()
 	GLuint vPosition = glGetAttribLocation(program, "vPosition");
 	GLuint vColor = glGetAttribLocation(program, "vColor");
 
-	
+
 	glGenVertexArrays(3, &vao[0]);
 
-	
+
 	glBindVertexArray(vao[0]);		// 棋盘格顶点
-	
+
 	glGenBuffers(2, vbo);//== &vbo[0]
 
 	// 棋盘格顶点位置
@@ -346,39 +346,39 @@ void init()
 	glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(vColor);
 
-	
+
 	glBindVertexArray(vao[1]);		// 棋盘格每个格子
 	glGenBuffers(2, &vbo[2]);
 
 	// 棋盘格每个格子顶点位置
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-	glBufferData(GL_ARRAY_BUFFER, points_num*sizeof(glm::vec4), boardpoints, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, points_num * sizeof(glm::vec4), boardpoints, GL_STATIC_DRAW);
 	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(vPosition);
 
 	// 棋盘格每个格子顶点颜色
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
-	glBufferData(GL_ARRAY_BUFFER, points_num*sizeof(glm::vec4), board_colours, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, points_num * sizeof(glm::vec4), board_colours, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(vColor);
 
-	
+
 	glBindVertexArray(vao[2]);		// 当前方块
 	glGenBuffers(2, &vbo[4]);
 
 	// 当前方块顶点位置
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[4]);
-	glBufferData(GL_ARRAY_BUFFER, 24*sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(vPosition);
 
 	// 当前方块顶点颜色
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[5]);
-	glBufferData(GL_ARRAY_BUFFER, 24*sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(vColor);
 
-	
+
 	glBindVertexArray(0);
 	glClearColor(0, 0, 0, 0);
 
@@ -390,7 +390,7 @@ void init()
 // 检查在cellpos位置的格子是否被填充或者是否在棋盘格的边界范围内
 bool checkvalid(glm::vec2 cellpos)
 {
-	if((cellpos.x >=0) && (cellpos.x < board_width) && (cellpos.y >= 0) && (cellpos.y < board_height) ){
+	if ((cellpos.x >= 0) && (cellpos.x < board_width) && (cellpos.y >= 0) && (cellpos.y < board_height)) {
 		//【】已检查边界
 		//【】还要检查下个位置是否已被占用
 		if (board[(int)cellpos.x][(int)cellpos.y])
@@ -426,9 +426,7 @@ void rotate()
 // 检查棋盘格在row行有没有被填充满
 bool checkfullrow(int row)
 {
-	//cout << "[DEBUG]Checking row " << row << ": "<< endl;
 	for (int x = 0; x < board_width; x++) {
-		//cout << "[DEBUG] col" << j << ": "<< board[row][j] << " " << endl;
 		if (!board[x][row]) {
 			return false;
 		}
@@ -436,24 +434,24 @@ bool checkfullrow(int row)
 	return true;
 }
 
-void movefullrow(int row){
+void movefullrow(int row) {
 	for (int x = 0; x < board_width; x++) {
-		board[x][board_height-1] = false;
-		changecellcolour(glm::vec2(x, board_height-1), black);
+		board[x][board_height - 1] = false;
+		changecellcolour(glm::vec2(x, board_height - 1), black);
 	}
 
-	for(int y = row;y<board_height-1;y++){
+	for (int y = row; y < board_height - 1; y++) {
 		for (int x = 0; x < board_width; x++) {
-			board[x][y] = board[x][y+1];
+			board[x][y] = board[x][y + 1];
 			changecellcolour(glm::vec2(x, y), board_colours[6 * (board_width * (y + 1) + x)]);
 		}
 	}
 }
 
 void scoreNote();
-void checkfull(){
-	for(int y = board_height-1; y >= 0; y--){
-		if(checkfullrow(y)){
+void checkfull() {
+	for (int y = board_height - 1; y >= 0; y--) {
+		if (checkfullrow(y)) {
 			// 一行满，所有上面的都要往下坠
 			//cout << "[Debug]"<<"第"<<i<<"行满"<<endl;
 			movefullrow(y);
@@ -509,8 +507,8 @@ void restart()
 {
 	// 将棋盘格所有位置的填充与否都设置为false（没有被填充）
 	for (int i = 0; i < board_width; i++)
-		for (int j = 0; j < board_height; j++){
-			if(board[i][j]){
+		for (int j = 0; j < board_height; j++) {
+			if (board[i][j]) {
 				board[i][j] = false;
 				changecellcolour(glm::vec2(i, j), black);
 			}
@@ -534,7 +532,7 @@ void display()
 	glBindVertexArray(vao[2]);
 	glDrawArrays(GL_TRIANGLES, 0, 24);	 // 绘制当前方块 (8 个三角形)
 	glBindVertexArray(vao[0]);
-	glDrawArrays(GL_LINES, 0, board_line_num * 2 );		 // 绘制棋盘格的线
+	glDrawArrays(GL_LINES, 0, board_line_num * 2);		 // 绘制棋盘格的线
 
 }
 
@@ -549,97 +547,25 @@ void reshape(GLsizei w, GLsizei h)
 // 键盘响应事件中的特殊按键响应
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	if(!gameover)
+	if (!gameover)
 	{
-		switch(key)
-		{	
+		switch (key)
+		{
 			// 控制方块的移动方向，更改形态
-			case GLFW_KEY_UP:	// 向上按键旋转方块
-				if (action == GLFW_PRESS || action == GLFW_REPEAT)
+		case GLFW_KEY_UP:	// 向上按键旋转方块
+			if (action == GLFW_PRESS || action == GLFW_REPEAT)
+			{
+				rotate();
+				break;
+			}
+			else
+			{
+				break;
+			}
+		case GLFW_KEY_DOWN: // 向下按键移动方块
+			if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+				if (!movetile(glm::vec2(0, -1)))
 				{
-					rotate();
-					break;
-				}
-				else
-				{
-					break;
-				}
-			case GLFW_KEY_DOWN: // 向下按键移动方块
-				if (action == GLFW_PRESS || action == GLFW_REPEAT){
-					if (!movetile(glm::vec2(0, -1)))
-					{
-						settile(); //【】方块就放在这里了
-						newtile(); //【】产生新的方块
-						break;
-					}
-					else
-					{
-						break;
-					}
-				}
-			case GLFW_KEY_LEFT:  // 向左按键移动方块
-				if (action == GLFW_PRESS || action == GLFW_REPEAT){
-					movetile(glm::vec2(-1, 0));
-					break;
-				}
-				else
-				{
-					break;
-				}
-			case GLFW_KEY_RIGHT: // 向右按键移动方块
-				if (action == GLFW_PRESS || action == GLFW_REPEAT){
-					movetile(glm::vec2(1, 0));
-					break;
-				}
-				else
-				{
-					break;
-				}
-			// 游戏设置。
-			case GLFW_KEY_ESCAPE:
-				if(action == GLFW_PRESS){
-					exit(EXIT_SUCCESS);
-					break;
-				}
-				else
-				{
-					break;
-				}
-			case GLFW_KEY_Q:
-				if(action == GLFW_PRESS){
-					exit(EXIT_SUCCESS);
-					break;
-				}
-				else
-				{
-					break;
-				}
-				
-			case GLFW_KEY_R:
-				if(action == GLFW_PRESS){
-					restart();
-					break;
-				}
-				else
-				{
-					break;
-				}		
-
-			case GLFW_KEY_P:
-				if(action == GLFW_PRESS){
-					isPaused = !isPaused;
-					break;
-				}
-				else
-				{
-					break;
-				}
-
-			case GLFW_KEY_SPACE:
-				if(action == GLFW_PRESS){
-					while (movetile(glm::vec2(0, -1))){
-						// 循环向下移动方块，直到不能移动
-					}
 					settile(); //【】方块就放在这里了
 					newtile(); //【】产生新的方块
 					break;
@@ -648,16 +574,88 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				{
 					break;
 				}
-
-			default:
+			}
+		case GLFW_KEY_LEFT:  // 向左按键移动方块
+			if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+				movetile(glm::vec2(-1, 0));
 				break;
+			}
+			else
+			{
+				break;
+			}
+		case GLFW_KEY_RIGHT: // 向右按键移动方块
+			if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+				movetile(glm::vec2(1, 0));
+				break;
+			}
+			else
+			{
+				break;
+			}
+			// 游戏设置。
+		case GLFW_KEY_ESCAPE:
+			if (action == GLFW_PRESS) {
+				exit(EXIT_SUCCESS);
+				break;
+			}
+			else
+			{
+				break;
+			}
+		case GLFW_KEY_Q:
+			if (action == GLFW_PRESS) {
+				exit(EXIT_SUCCESS);
+				break;
+			}
+			else
+			{
+				break;
+			}
+
+		case GLFW_KEY_R:
+			if (action == GLFW_PRESS) {
+				restart();
+				break;
+			}
+			else
+			{
+				break;
+			}
+
+		case GLFW_KEY_P:
+			if (action == GLFW_PRESS) {
+				isPaused = !isPaused;
+				break;
+			}
+			else
+			{
+				break;
+			}
+
+		case GLFW_KEY_SPACE:
+			if (action == GLFW_PRESS) {
+				while (movetile(glm::vec2(0, -1))) {
+					// 循环向下移动方块，直到不能移动
+				}
+				settile(); //【】方块就放在这里了
+				newtile(); //【】产生新的方块
+				break;
+			}
+			else
+			{
+				break;
+			}
+
+		default:
+			break;
 		}
 	}
 }
 
 //【while循环中的函数】:
 
-void allFallsDown(){
+void allFallsDown() {
 	if (!movetile(glm::vec2(0, -1)))
 	{
 		settile();
@@ -665,17 +663,17 @@ void allFallsDown(){
 	}
 }
 
-void forPause(){
+void forPause() {
 	int flag = 0;
-	while(isPaused){
-		if(!flag){
-			cout <<  "[INFO]" << "游戏暂停" << endl;
+	while (isPaused) {
+		if (!flag) {
+			cout << "\r# Score: " << score << "  [INFO]" << "游戏暂停" << "                                          " << std::flush;
 			flag = 1;
 		}
 		glfwPollEvents();
 	}
-	if(flag){
-	cout << "[INFO]" << "游戏继续" << endl;
+	if (flag) {
+		cout << "\r# Score: " << score << "                                          " << std::flush;
 	}
 }
 
@@ -706,31 +704,31 @@ bool checkIfGameOver() {
 	return false;
 }
 
-void userOptions(GLFWwindow* window){
+void userOptions(GLFWwindow* window) {
 	int interval = 50;//ms
-	for (int i = 0; i < 1000 / interval;i++) {
+	for (int i = 0; i < 1000 / interval; i++) {
 
 		forPause();
 
 		glfwPollEvents();
 		std::this_thread::sleep_for(std::chrono::milliseconds(interval));
-		checkfull();		
+		checkfull();
 
 		display();
 		glfwSwapBuffers(window);
 	}
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-	#ifdef __APPLE__
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	#endif
+
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
 	// 创建窗口。
 	GLFWwindow* window = glfwCreateWindow(500, 900, "Tetris by DBWGLX", NULL, NULL);
@@ -745,27 +743,27 @@ int main(int argc, char **argv)
 	glfwSetKeyCallback(window, key_callback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-	
-	
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+
+
 	init();
 	cout << "[INFO]" << "游戏开始" << endl;
 	std::cout << "\033]0;Tetris Game Console\007";
 	note();
 
 	while (!glfwWindowShouldClose(window))
-    { 
+	{
 		forPause();
 
 		while (checkIfGameOver()) {
 			glfwPollEvents();
 		}
 
-        display();//【绘制固定的内容】
-        glfwSwapBuffers(window);	
+		display();//【绘制固定的内容】
+		glfwSwapBuffers(window);
 
 		forPause();
 
@@ -779,8 +777,8 @@ int main(int argc, char **argv)
 
 		//用户操作
 		userOptions(window);
-	
-    }
-    glfwTerminate();
-    return 0;
+
+	}
+	glfwTerminate();
+	return 0;
 }
