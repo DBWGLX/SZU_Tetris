@@ -1,6 +1,36 @@
+<div align="center">
+<b>Computer Graphics Course - Shenzhen University</b>
+</div>
 
 
-# 项目介绍：
+<div align="center">
+<b>Mid-term Assignment - Tetris implementation sample code</b>
+</div>
+
+<p align="center">
+<b>============================================================</b>
+</p>
+<br>
+<br>
+
+![GIF 2024-10-18 18-35-41](https://github.com/user-attachments/assets/486db654-f4ef-41c4-b6ff-08f319add67c)
+
+## 简介：
+
+
+这是一个基于OpenGL的cpp代码而实现的俄罗斯方块游戏。
+
+基于已有框架代码完成。
+
+框架代码在另一个分支“blank_code”中。（※ 直接下载master中的code无法直接运行，可以先下载blank_code中的cmake文件，cmake构建后，直接把这里的main粘过去即可正常运行）
+
+游戏时请使用英文输入法，否则无法识别字母按键。
+
+* [项目介绍](项目介绍)
+- [代码解析](代码解析)
+
+
+# 项目介绍
 
 ### 项目坐标系：
 
@@ -12,7 +42,7 @@
 
 ![image](https://github.com/user-attachments/assets/daac9afe-0af2-4c64-b457-9a75c7bc4187)
 
-得分在终端打印了，通过 \r 的方式在同一行刷新
+得分在终端打印，通过 \r 的方式在同一行刷新
 
 <br>
 
@@ -32,7 +62,7 @@
 
 <br>
 
-# 代码解析：
+# 代码解析
 
 实现的功能：
 
@@ -107,6 +137,3 @@ Cpp的方式
 ![image](https://github.com/user-attachments/assets/616356f0-deb4-4834-94e8-e0309b60b42d)
 
 
-# 心得：
-
-1.	完成了俄罗斯方块上层逻辑和方块部分图像的实现，第一次写游戏，收获很多，蛮开心的。
