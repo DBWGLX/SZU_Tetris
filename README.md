@@ -4,11 +4,6 @@
 
 
 <div align="center">
-<b>Computer Graphics Course - Shenzhen University</b>
-</div>
-
-
-<div align="center">
 <b>Mid-term Assignment - Tetris implementation sample code</b>
 </div>
 
