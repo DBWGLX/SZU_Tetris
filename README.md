@@ -4,6 +4,11 @@
 
 
 <div align="center">
+<b>Computer Graphics Course - Shenzhen University</b>
+</div>
+
+
+<div align="center">
 <b>Mid-term Assignment - Tetris implementation sample code</b>
 </div>
 
@@ -15,8 +20,13 @@
 
 ![GIF 2024-10-18 18-35-41](https://github.com/user-attachments/assets/486db654-f4ef-41c4-b6ff-08f319add67c)
 
+
+
 ## 简介：
 
+![REPO SIZE](https://img.shields.io/github/repo-size/DBWGLX/SZU_Tetris.svg)
+![CODE SIZE](https://img.shields.io/github/languages/code-size/DBWGLX/SZU_Tetris.svg)
+![License](https://img.shields.io/github/license/DBWGLX/SZU_Tetris.svg)
 
 这是一个基于OpenGL的cpp代码而实现的俄罗斯方块游戏。
 
