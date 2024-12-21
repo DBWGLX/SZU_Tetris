@@ -45,6 +45,11 @@
 
 ！注意行是y坐标！
 
+### 方块格式：
+
+![image](https://github.com/user-attachments/assets/bac3e6e8-585f-47a5-867e-01fe30d9bc7e)
+
+
 <br>
 
 ![image](https://github.com/user-attachments/assets/daac9afe-0af2-4c64-b457-9a75c7bc4187)
