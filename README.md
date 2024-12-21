@@ -22,6 +22,7 @@
 ![REPO SIZE](https://img.shields.io/github/repo-size/DBWGLX/SZU_Tetris.svg)
 ![CODE SIZE](https://img.shields.io/github/languages/code-size/DBWGLX/SZU_Tetris.svg)
 ![License](https://img.shields.io/github/license/DBWGLX/SZU_Tetris.svg)
+![](https://img.shields.io/badge/%20SZU%20-8C0A41)
 
 这是一个基于OpenGL的cpp代码而实现的俄罗斯方块游戏。
 
